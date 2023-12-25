@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.test.project.system.yaopin.mapper.TYaopinMapper">
+    
+    <resultMap type="TYaopin" id="TYaopinResult">
+        <result property="id"    column="id"    />
+        <result property="pid"    column="pid"    />
+        <result property="yid"    column="yid"    />
+        <result property="mingcheng"    column="mingcheng"    />
+        <result property="shuliang"    column="shuliang"    />
+        <result property="备注"    column="备注"    />
+    </resultMap>
+
+    <sql id="selectTYaopinVo">
+        select x.id, x.pid, x.yid, x.mingcheng, x.shuliang, x.备注 from t_yaopin x
+    </sql>
+
+    <select id="selectTYaopinList" parameterType="TYaopin" resultMap="TYaopinResult">
+        <include refid="selectTYaopinVo"/>
+        <where>  
+            <if test="pid != null "> and x.pid = #{pid}</if>
+            <if test="yid != null "> and x.yid = #{yid}</if>
+            <if test="mingcheng != null  and mingcheng != ''"> and x.mingcheng like concat('%', #{mingcheng}, '%')</if>
+            <if test="shuliang != null  and shuliang != ''"> and x.shuliang = #{shuliang}</if>
+            <if test="备注 != null  and 备注 != ''"> and x.备注 like concat('%', #{备注}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectTYaopinById" parameterType="Long" resultMap="TYaopinResult">
+        <include refid="selectTYaopinVo"/>
+        where x.id = #{id}
+    </select>
+        
+    <insert id="insertTYaopin" parameterType="TYaopin" useGeneratedKeys="true" keyProperty="id">
+        insert into t_yaopin
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pid != null">pid,</if>
+            <if test="yid != null">yid,</if>
+            <if test="mingcheng != null and mingcheng != ''">mingcheng,</if>
+            <if test="shuliang != null and shuliang != ''">shuliang,</if>
+            <if test="备注 != null and 备注 != ''">备注,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pid != null">#{pid},</if>
+            <if test="yid != null">#{yid},</if>
+            <if test="mingcheng != null and mingcheng != ''">#{mingcheng},</if>
+            <if test="shuliang != null and shuliang != ''">#{shuliang},</if>
+            <if test="备注 != null and 备注 != ''">#{备注},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTYaopin" parameterType="TYaopin">
+        update t_yaopin
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pid != null">pid = #{pid},</if>
+            <if test="yid != null">yid = #{yid},</if>
+            <if test="mingcheng != null and mingcheng != ''">mingcheng = #{mingcheng},</if>
+            <if test="shuliang != null and shuliang != ''">shuliang = #{shuliang},</if>
+            <if test="备注 != null and 备注 != ''">备注 = #{备注},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTYaopinById" parameterType="Long">
+        delete from t_yaopin where id = #{id}
+    </delete>
+
+    <delete id="deleteTYaopinByIds" parameterType="String">
+        delete from t_yaopin where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

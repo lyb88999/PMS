@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.test.project.system.patient.mapper.TPatientMapper">
+    
+    <resultMap type="TPatient" id="TPatientResult">
+        <result property="id"    column="id"    />
+        <result property="danhao"    column="danhao"    />
+        <result property="name"    column="name"    />
+        <result property="sex"    column="sex"    />
+        <result property="age"    column="age"    />
+        <result property="symptom"    column="symptom"    />
+        <result property="cause"    column="cause"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="pingjia"    column="pingjia"    />
+        <result property="gongshi"    column="gongshi"    />
+    </resultMap>
+
+    <sql id="selectTPatientVo">
+        select x.id, x.danhao, x.name, x.sex, x.age, x.symptom, x.cause, x.create_by, x.create_time, x.pingjia, x.gongshi from t_patient x
+    </sql>
+
+    <select id="selectTPatientList" parameterType="TPatient" resultMap="TPatientResult">
+        <include refid="selectTPatientVo"/>
+        <where>  
+            <if test="danhao != null  and danhao != ''"> and x.danhao like concat('%', #{danhao}, '%')</if>
+            <if test="name != null  and name != ''"> and x.name like concat('%', #{name}, '%')</if>
+            <if test="sex != null  and sex != ''"> and x.sex = #{sex}</if>
+            <if test="age != null "> and x.age = #{age}</if>
+            <if test="symptom != null  and symptom != ''"> and x.symptom = #{symptom}</if>
+            <if test="cause != null  and cause != ''"> and x.cause = #{cause}</if>
+            <if test="createBy != null  and createBy != ''"> and x.create_by = #{createBy}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and x.create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="pingjia != null  and pingjia != ''"> and x.pingjia = #{pingjia}</if>
+            <if test="gongshi != null  and gongshi != ''"> and x.gongshi = #{gongshi}</if>
+        </where>
+    </select>
+    
+    <select id="selectTPatientById" parameterType="Long" resultMap="TPatientResult">
+        <include refid="selectTPatientVo"/>
+        where x.id = #{id}
+    </select>
+        
+    <insert id="insertTPatient" parameterType="TPatient" useGeneratedKeys="true" keyProperty="id">
+        insert into t_patient
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="danhao != null and danhao != ''">danhao,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="sex != null and sex != ''">sex,</if>
+            <if test="age != null">age,</if>
+            <if test="symptom != null and symptom != ''">symptom,</if>
+            <if test="cause != null and cause != ''">cause,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="pingjia != null">pingjia,</if>
+            <if test="gongshi != null">gongshi,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="danhao != null and danhao != ''">#{danhao},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="sex != null and sex != ''">#{sex},</if>
+            <if test="age != null">#{age},</if>
+            <if test="symptom != null and symptom != ''">#{symptom},</if>
+            <if test="cause != null and cause != ''">#{cause},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="pingjia != null">#{pingjia},</if>
+            <if test="gongshi != null">#{gongshi},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTPatient" parameterType="TPatient">
+        update t_patient
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="danhao != null and danhao != ''">danhao = #{danhao},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="sex != null and sex != ''">sex = #{sex},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="symptom != null and symptom != ''">symptom = #{symptom},</if>
+            <if test="cause != null and cause != ''">cause = #{cause},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="pingjia != null">pingjia = #{pingjia},</if>
+            <if test="gongshi != null">gongshi = #{gongshi},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTPatientById" parameterType="Long">
+        delete from t_patient where id = #{id}
+    </delete>
+
+    <delete id="deleteTPatientByIds" parameterType="String">
+        delete from t_patient where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

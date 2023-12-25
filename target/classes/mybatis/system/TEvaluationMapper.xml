@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.test.project.system.evaluation.mapper.TEvaluationMapper">
+    
+    <resultMap type="TEvaluation" id="TEvaluationResult">
+        <result property="id"    column="id"    />
+        <result property="pid"    column="pid"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="evaluate"    column="evaluate"    />
+        
+           <result property="danhao"    column="danhao"    />
+        <result property="name"    column="name"    />
+        <result property="sex"    column="sex"    />
+        <result property="age"    column="age"    />
+        <result property="symptom"    column="symptom"    />
+        <result property="cause"    column="cause"    />
+        <result property="yishi"    column="yishi"    />
+    </resultMap>
+
+    <sql id="selectTEvaluationVo">
+        select x.id, x.pid, x.create_by, x.create_time, x.evaluate
+        , p.danhao, p.name, p.sex, p.age, p.symptom, p.cause,p.create_by yishi
+         from t_evaluation x
+         inner join t_patient p on p.id = x.pid
+    </sql>
+
+    <select id="selectTEvaluationList" parameterType="TEvaluation" resultMap="TEvaluationResult">
+        <include refid="selectTEvaluationVo"/>
+        <where>  
+         <if test="danhao != null  and danhao != ''"> and p.danhao like concat('%', #{danhao}, '%')</if>
+            <if test="name != null  and name != ''"> and p.name like concat('%', #{name}, '%')</if>
+            <if test="sex != null  and sex != ''"> and p.sex = #{sex}</if>
+            <if test="age != null "> and p.age = #{age}</if>
+            <if test="symptom != null  and symptom != ''"> and p.symptom = #{symptom}</if>
+            <if test="cause != null  and cause != ''"> and p.cause = #{cause}</if>
+            <if test="yishi != null  and yishi != ''"> and p.create_by = #{yishi}</if>
+            <if test="pid != null "> and x.pid = #{pid}</if>
+            <if test="createBy != null  and createBy != ''"> and x.create_by = #{createBy}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and x.create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="evaluate != null  and evaluate != ''"> and x.evaluate like concat('%', #{evaluate}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectTEvaluationById" parameterType="Long" resultMap="TEvaluationResult">
+        <include refid="selectTEvaluationVo"/>
+        where x.id = #{id}
+    </select>
+        
+    <insert id="insertTEvaluation" parameterType="TEvaluation" useGeneratedKeys="true" keyProperty="id">
+        insert into t_evaluation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pid != null">pid,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="evaluate != null and evaluate != ''">evaluate,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pid != null">#{pid},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="evaluate != null and evaluate != ''">#{evaluate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTEvaluation" parameterType="TEvaluation">
+        update t_evaluation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pid != null">pid = #{pid},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="evaluate != null and evaluate != ''">evaluate = #{evaluate},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTEvaluationById" parameterType="Long">
+        delete from t_evaluation where id = #{id}
+    </delete>
+
+    <delete id="deleteTEvaluationByIds" parameterType="String">
+        delete from t_evaluation where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

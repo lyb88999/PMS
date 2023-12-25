@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.test.project.system.medicine.mapper.TMedicineMapper">
+    
+    <resultMap type="TMedicine" id="TMedicineResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="stock"    column="stock"    />
+    </resultMap>
+
+    <sql id="selectTMedicineVo">
+        select x.id, x.name, x.stock from t_medicine x
+    </sql>
+
+    <select id="selectTMedicineList" parameterType="TMedicine" resultMap="TMedicineResult">
+        <include refid="selectTMedicineVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and x.name like concat('%', #{name}, '%')</if>
+            <if test="stock != null "> and x.stock = #{stock}</if>
+        </where>
+    </select>
+    
+    <select id="selectTMedicineById" parameterType="Long" resultMap="TMedicineResult">
+        <include refid="selectTMedicineVo"/>
+        where x.id = #{id}
+    </select>
+        
+    <insert id="insertTMedicine" parameterType="TMedicine" useGeneratedKeys="true" keyProperty="id">
+        insert into t_medicine
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="stock != null">stock,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="stock != null">#{stock},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTMedicine" parameterType="TMedicine">
+        update t_medicine
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="stock != null">stock = #{stock},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTMedicineById" parameterType="Long">
+        delete from t_medicine where id = #{id}
+    </delete>
+
+    <delete id="deleteTMedicineByIds" parameterType="String">
+        delete from t_medicine where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
